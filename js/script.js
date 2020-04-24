@@ -11,10 +11,6 @@ const closeBtn = document.getElementById('close');
 // Store voices
 let voices = [];
 
-// Initialize rate to value in local storage or 1
-rateSelect.value =
-    localStorage.getItem('rate') !== null ? localStorage.getItem('rate') : '1';
-
 // Initialize speech synthesis
 const message = new SpeechSynthesisUtterance();
 
@@ -62,6 +58,15 @@ function getVoices() {
 
     voicesSelect.value = selectedVoice;
     message.voice = voices.find(voice => voice.name === selectedVoice);
+
+    // Initialize rate to value in local storage or 1
+    const selectedRate =
+        localStorage.getItem('rate') !== null
+            ? localStorage.getItem('rate')
+            : '1';
+
+    rateSelect.value = selectedRate;
+    message.rate = selectedRate;
 }
 
 // Set text
