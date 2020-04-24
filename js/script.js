@@ -5,20 +5,22 @@ const voicesSelect = document.getElementById('voices');
 const rateSelect = document.getElementById('rate');
 const textArea = document.getElementById('text');
 const readBtn = document.getElementById('read');
+const stopBtn = document.getElementById('stop');
+const pauseBtn = document.getElementById('pause');
 const toggleBtn = document.getElementById('toggle');
 const closeBtn = document.getElementById('close');
 
 // Store voices
 let voices = [];
 
+// Paused state
+let paused = false;
+
 // Initialize speech synthesis
 const message = new SpeechSynthesisUtterance();
 
 // Populate page with default speech boxes
 data.forEach(createBox);
-
-// Load voices on page load
-getVoices();
 
 // Create speech boxes
 function createBox(item) {
@@ -91,6 +93,19 @@ function setRate(e) {
     localStorage.setItem('rate', e.target.value);
 }
 
+// Pause/Resume speaking text
+function togglePauseResume() {
+    if (speechSynthesis.speaking && !paused) {
+        paused = true;
+        speechSynthesis.pause();
+        pauseBtn.innerText = 'Resume';
+    } else if (paused) {
+        paused = false;
+        speechSynthesis.resume();
+        pauseBtn.innerText = 'Pause';
+    }
+}
+
 // Event listeners
 
 // Toggle text box
@@ -103,8 +118,12 @@ closeBtn.addEventListener('click', () =>
     document.getElementById('text-box').classList.toggle('show')
 );
 
-// Voices changed
-speechSynthesis.addEventListener('voiceschanged', getVoices);
+// Load list of voices. addEventListener didn't work for this in Safari
+if ('onvoiceschanged' in speechSynthesis) {
+    speechSynthesis.onvoiceschanged = getVoices;
+} else {
+    getVoices();
+}
 
 // Change voice
 voicesSelect.addEventListener('change', setVoice);
@@ -114,6 +133,18 @@ rateSelect.addEventListener('change', setRate);
 
 // Read text button
 readBtn.addEventListener('click', () => {
-    setTextMessage(textArea.value);
-    speakText();
+    if (!speechSynthesis.speaking) {
+        setTextMessage(textArea.value);
+        speakText();
+    }
+});
+
+// Stop reading text button
+stopBtn.addEventListener('click', () => {
+    speechSynthesis.cancel();
+});
+
+// Pause button
+pauseBtn.addEventListener('click', () => {
+    togglePauseResume();
 });
