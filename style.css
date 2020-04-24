@@ -62,13 +62,22 @@ select:focus {
     transform: translate(-50%, 0);
 }
 
+.select-menu {
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .text-box select {
-    background-color: darksalmon;
+    background-color: #ffefea;
     border: 0;
-    color: #fff;
+    color: #333;
     font-size: 12px;
     height: 30px;
-    width: 100%;
+    width: 30%;
+    margin-left: 10px;
 }
 
 .text-box textarea {
@@ -82,7 +91,8 @@ select:focus {
 }
 
 .text-box .btn {
-    width: 100%;
+    margin: 0 35%;
+    width: 30%;
 }
 
 .text-box .close {

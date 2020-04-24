@@ -2,63 +2,27 @@
 
 const main = document.querySelector('main');
 const voicesSelect = document.getElementById('voices');
+const rateSelect = document.getElementById('rate');
 const textArea = document.getElementById('text');
 const readBtn = document.getElementById('read');
 const toggleBtn = document.getElementById('toggle');
 const closeBtn = document.getElementById('close');
 
-const data = [
-    {
-        image: './img/drink.jpg',
-        text: "I'm Thirsty",
-    },
-    {
-        image: './img/food.jpg',
-        text: "I'm Hungry",
-    },
-    {
-        image: './img/tired.jpg',
-        text: "I'm Tired",
-    },
-    {
-        image: './img/hurt.jpg',
-        text: "I'm Hurt",
-    },
-    {
-        image: './img/happy.jpg',
-        text: "I'm Happy",
-    },
-    {
-        image: './img/angry.jpg',
-        text: "I'm Angry",
-    },
-    {
-        image: './img/sad.jpg',
-        text: "I'm Sad",
-    },
-    {
-        image: './img/scared.jpg',
-        text: "I'm Scared",
-    },
-    {
-        image: './img/outside.jpg',
-        text: 'I Want To Go Hiking',
-    },
-    {
-        image: './img/home.jpg',
-        text: 'I Want To Go Home',
-    },
-    {
-        image: './img/shop.jpg',
-        text: 'I Want To Go Shopping',
-    },
-    {
-        image: './img/tv.jpg',
-        text: 'I Want To Watch TV',
-    },
-];
+// Store voices
+let voices = [];
 
+// Initialize rate to value in local storage or 1
+rateSelect.value =
+    localStorage.getItem('rate') !== null ? localStorage.getItem('rate') : '1';
+
+// Initialize speech synthesis
+const message = new SpeechSynthesisUtterance();
+
+// Populate page with default speech boxes
 data.forEach(createBox);
+
+// Load voices on page load
+getVoices();
 
 // Create speech boxes
 function createBox(item) {
@@ -79,9 +43,7 @@ function createBox(item) {
     main.appendChild(box);
 }
 
-// Store voices
-let voices = [];
-
+// Populate voice select menu with voice options
 function getVoices() {
     voices = speechSynthesis.getVoices();
 
@@ -91,10 +53,16 @@ function getVoices() {
         option.innerText = `${voice.name} ${voice.lang}`;
         voicesSelect.appendChild(option);
     });
-}
 
-// Initialize speech synthesis
-const message = new SpeechSynthesisUtterance();
+    // Set voice select menu to value in local storage or to the first voice
+    const selectedVoice =
+        localStorage.getItem('voice') !== null
+            ? localStorage.getItem('voice')
+            : 'Alex';
+
+    voicesSelect.value = selectedVoice;
+    message.voice = voices.find(voice => voice.name === selectedVoice);
+}
 
 // Set text
 function setTextMessage(text) {
@@ -109,6 +77,13 @@ function speakText() {
 // Set voice
 function setVoice(e) {
     message.voice = voices.find(voice => voice.name === e.target.value);
+    localStorage.setItem('voice', e.target.value);
+}
+
+// Set rate
+function setRate(e) {
+    message.rate = e.target.value;
+    localStorage.setItem('rate', e.target.value);
 }
 
 // Event listeners
@@ -129,10 +104,11 @@ speechSynthesis.addEventListener('voiceschanged', getVoices);
 // Change voice
 voicesSelect.addEventListener('change', setVoice);
 
+// Change voice
+rateSelect.addEventListener('change', setRate);
+
 // Read text button
 readBtn.addEventListener('click', () => {
     setTextMessage(textArea.value);
     speakText();
 });
-
-getVoices();
